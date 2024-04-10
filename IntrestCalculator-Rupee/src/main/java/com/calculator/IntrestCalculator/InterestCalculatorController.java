@@ -46,6 +46,8 @@ public class InterestCalculatorController {
         // Build the result string
         StringBuilder result = new StringBuilder();
         result.append("Interest: ").append(interest).append("<br>");
+        result.append("Amount: ").append(principal).append("<br>");
+        result.append("Total Amount: ").append(principal+interest).append("<br>");
         result.append("Duration: ");
         if (years > 0) {
             result.append(years).append(" year(s) ");
