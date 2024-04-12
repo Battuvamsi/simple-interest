@@ -23,7 +23,8 @@ public class InterestCalculatorController {
                                                   @RequestParam double rate,
                                                   @RequestParam String startDate,
                                                   @RequestParam String endDate,
-                                                  @RequestParam String interestType) {
+                                                  @RequestParam String interestType,
+                                                  @RequestParam String rateUnit) {
         // Convert start and end dates to LocalDate objects
         LocalDate startDateObj = LocalDate.parse(startDate);
         LocalDate endDateObj = LocalDate.parse(endDate);
@@ -35,13 +36,27 @@ public class InterestCalculatorController {
         int months = period.getMonths();
         int days = period.getDays();
 
-        // Calculate interest based on the provided principal, rate, and time
-        int interest = 0;
+     // Calculate interest based on the provided principal, rate, and time
+        int interest = 0; // Use double to support decimal values
         if (interestType.equals("simple")) {
-            interest = (int) ((principal * (rate*12) * daysDifference) / (100 * 365));
+            if (rateUnit.equals("percentage")) {
+                // Calculate interest for percentage rate
+                interest = (int) ((principal * (rate / 100) * daysDifference) / 365);
+            } else if (rateUnit.equals("rupees")) {
+                // Calculate interest for rupees rate
+            	interest = (int) ((principal * ((rate*12) / 100) * daysDifference) / 365);
+            }
         } else if (interestType.equals("compound")) {
-            interest = (int) (principal * (Math.pow((1 + (rate*12) / 100), (years + (months / 12.0) + (days / 365.0)))) - principal);
+            if (rateUnit.equals("percentage")) {
+                // Calculate interest for percentage rate
+            	interest = (int) (principal * (Math.pow((1 + rate / 100), (years + (months / 12.0) + (days / 365.0)))) - principal);
+            } else if (rateUnit.equals("rupees")) {
+                // Calculate interest for rupees rate
+               // double annualRate = rate / principal * 100; // Convert rupees rate to annual percentage rate
+                interest = (int) (principal * (Math.pow((1 + (rate*12) / 100), (years + (months / 12.0) + (days / 365.0)))) - principal);
+            }
         }
+
 
         // Build the result string
         StringBuilder result = new StringBuilder();
@@ -62,6 +77,7 @@ public class InterestCalculatorController {
         // Return the result string
         return result.toString();
     }
+
 
 }
 

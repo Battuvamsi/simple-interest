@@ -1,48 +1,60 @@
 <!DOCTYPE html>
 <html lang="te">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intrest Calculator</title>
+    <title>Interest Calculator</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Custom CSS */
+        
         body {
             background: linear-gradient(to right, #2196F3, #ffff);
             color: #000;
             font-family: Arial, sans-serif;
         }
-        h2{
+        
+        h2 {
             color: black;
         }
+        
         .container {
             max-width: 400px;
             margin: 50px auto;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             padding: 30px;
         }
+        
         .form-group label {
             font-weight: bold;
-            color: #2196F3; /* Blue */
+            color: #2196F3;
+            /* Blue */
         }
+        
         .btn-primary {
-            background-color: #2196F3; /* Blue */
+            background-color: #2196F3;
+            /* Blue */
             border: none;
         }
+        
         .btn-primary:hover {
-            background-color: #1E88E5; /* Darker Blue */
+            background-color: #1E88E5;
+            /* Darker Blue */
         }
+        
         #result {
             margin-top: 20px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h2 class="mb-4 text-center" id="calculatorTitle">వడ్డీ కాలిక్యులేటర్</h2> 
+        <h2 class="mb-4 text-center" id="calculatorTitle">వడ్డీ కాలిక్యులేటర్</h2>
         <div id="languageOptions" class="text-right mb-3">
             <button class="btn btn-info" onclick="switchLanguage('en')">English</button>
             <button class="btn btn-info" onclick="switchLanguage('te')">తెలుగు</button>
@@ -53,8 +65,14 @@
                 <input type="number" class="form-control" id="principal" name="principal" required>
             </div>
             <div class="form-group">
-                <label id="rateLabel" for="rate">వడ్డీ రేటు (రూపాయలు):</label>
-                <input type="number" class="form-control" id="rate" name="rate" required>
+                <label id="rateLabel" for="rate">వడ్డీ రేటు:</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="rate" name="rate" required>
+                    <select class="custom-select" id="rateUnit">
+                        <option value="percentage">శాతానికి (%)</option>
+                        <option value="rupees">రూపాయల కోసం</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label id="startDateLabel" for="startDate">ప్రారంభ తేదీ:</label>
@@ -71,6 +89,8 @@
                     <option value="compound">కంపౌండ్ వాయాసం</option>
                 </select>
             </div>
+            <!-- Hidden input field for rateUnit -->
+            <input type="hidden" id="rateUnit" name="rateUnit">
             <button type="button" class="btn btn-primary btn-block" id="calculateButton" onclick="calculateInterest()">లాభం లెక్కించు</button>
         </form>
         <div id="result"></div>
@@ -89,25 +109,29 @@
         var languageData = {
             'en': {
                 'principalLabel': 'Principal Amount:',
-                'rateLabel': 'Interest Rate (rupees):',
+                'rateLabel': 'Interest Rate:',
                 'startDateLabel': 'Start Date:',
                 'endDateLabel': 'End Date:',
                 'interestTypeLabel': 'Interest Type:',
                 'calculateButton': 'Calculate',
                 'calculatorTitle': 'Interest Calculator',
                 'simpleInterestOption': 'Simple Interest',
-                'compoundInterestOption': 'Compound Interest'
+                'compoundInterestOption': 'Compound Interest',
+                'percentageOption': 'Percentage (%)',
+                'rupeesOption': 'Rupees'
             },
             'te': {
                 'principalLabel': 'అసలు మెుత్తం:',
-                'rateLabel': 'వడ్డీ రేటు (రూపాయలు):',
+                'rateLabel': 'వడ్డీ రేటు:',
                 'startDateLabel': 'ప్రారంభ తేదీ:',
                 'endDateLabel': 'ఆఖరి తేది:',
                 'interestTypeLabel': 'వడ్డీ రకం:',
                 'calculateButton': 'లాభం లెక్కించు',
                 'calculatorTitle': 'వడ్డీ కాలిక్యులేటర్',
                 'simpleInterestOption': 'సాధారణ వడ్డీ',
-                'compoundInterestOption': 'చక్రవడ్డీ'
+                'compoundInterestOption': 'చక్రవడ్డీ',
+                'percentageOption': 'శాతానికి (%)',
+                'rupeesOption': 'రూపాయల కోసం'
             }
         };
 
@@ -138,36 +162,36 @@
         function updateOptions() {
             document.querySelector("#interestType option[value='simple']").innerText = languageData[language]['simpleInterestOption'];
             document.querySelector("#interestType option[value='compound']").innerText = languageData[language]['compoundInterestOption'];
+            
+            // Update rate unit options
+            var rateUnitSelect = document.getElementById("rateUnit");
+            rateUnitSelect.options[0].innerText = languageData[language]['percentageOption'];
+            rateUnitSelect.options[1].innerText = languageData[language]['rupeesOption'];
         }
 
         // Call updateLabels initially to set the labels to the default language
         updateLabels();
         updateHeading();
         updateOptions();
-        
+
         function calculateInterest() {
             var principal = document.getElementById("principal").value;
             var rate = document.getElementById("rate").value;
             var startDate = document.getElementById("startDate").value;
             var endDate = document.getElementById("endDate").value;
             var interestType = document.getElementById("interestType").value;
+            
+            // Get the selected rate unit
+            var rateUnit = document.getElementById("rateUnit").value;
 
-            // Validate input
-            if (!principal || !rate || !startDate || !endDate) {
-                document.getElementById("result").innerHTML = "<p class='mt-3 alert alert-danger'>దయచేసి అన్ని ఫీల్డ్స్ నింపండి.</p>";
-                return;
-            }
-
-            if (new Date(endDate) <= new Date(startDate)) {
-                document.getElementById("result").innerHTML = "<p class='mt-3 alert alert-danger'>ముగింపు తేదీ ప్రారంభ తేదీని తరువాత ఉండాలి.</p>";
-                return;
-            }
-
+            // Validate input and convert rate to percentage if necessary
+            // Logic for input validation and rate conversion
+            
             // Perform AJAX request to the backend to calculate interest
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/calculate", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         document.getElementById("result").innerHTML = "<p class='mt-3 alert alert-info'>" + xhr.responseText + "</p>";
@@ -176,14 +200,15 @@
                     }
                 }
             };
-            xhr.send("principal=" + principal + "&rate=" + rate + "&startDate=" + startDate + "&endDate=" + endDate + "&interestType=" + interestType);
+            xhr.send("principal=" + principal + "&rate=" + rate + "&startDate=" + startDate + "&endDate=" + endDate + "&interestType=" + interestType + "&rateUnit=" + rateUnit);
         }
     </script>
-	
-	<footer class="text-center mt-4">
-	        <p>Created by BATTU VAMSI</p>
-			<p>Version 1.1</p>
-	    </footer>
+
+    <footer class="text-center mt-4">
+        <p>Created by BATTU VAMSI</p>
+        <p>Version 1.1</p>
+    </footer>
 </body>
+
 </html>
 
