@@ -69,8 +69,8 @@
                 <div class="input-group">
                     <input type="number" class="form-control" id="rate" name="rate" required>
                     <select class="custom-select" id="rateUnit">
+						<option value="rupees">రూపాయల కోసం</option>
                         <option value="percentage">శాతానికి (%)</option>
-                        <option value="rupees">రూపాయల కోసం</option>
                     </select>
                 </div>
             </div>
@@ -165,8 +165,9 @@
             
             // Update rate unit options
             var rateUnitSelect = document.getElementById("rateUnit");
-            rateUnitSelect.options[0].innerText = languageData[language]['percentageOption'];
-            rateUnitSelect.options[1].innerText = languageData[language]['rupeesOption'];
+			rateUnitSelect.options[0].innerText = languageData[language]['rupeesOption'];
+            rateUnitSelect.options[1].innerText = languageData[language]['percentageOption'];
+            
         }
 
         // Call updateLabels initially to set the labels to the default language
